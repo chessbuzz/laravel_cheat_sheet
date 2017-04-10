@@ -25,7 +25,18 @@ laravel new command to create a fresh laravel installation in the directory you 
 ```Create a project: composer create-project myprojectname```
 
 If you get any errors when running php artisan serve
-composer update from your project folder.
+or any artisan commands then run:
+
+```composer update --no-scripts ```
+
+You may also need to regenerate the ciphers for the project:
+
+```
+php artisan key:generate
+```
+
+from your project folder.
+
 
 Alternative is Laravel Homestead, which comes with Nginx, PHP 5.6, MySQL, Redis, Memcached, and Beanstalk. 
 
@@ -106,6 +117,32 @@ Hyperlinking to dynamic ids
 
 * If you ever return a database result from a view, Laravel returns it as JSON.
 
+#### Creating a new database table ####
+Make a new Comment model, and make migration
+
+```php artisan make:model Comment -m ```
+
+Edit the migrations file to add any additional fields.
+
+If one to many relatioship the many takes the id of the one.
+```php
+$table->integer('post_id');
+```
+Migrate the database
+```php artisan migrate```
+
+Add many relationship to Post model
+```php
+class Post extends Model
+{
+    public function comments()
+    {
+      return $this->hasMany(Comment::class);
+    }
+}
+```
+
+
 
 ## Eloquent ##
 
@@ -118,10 +155,10 @@ Errors:
 
 The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.
 
-php artisan key:generate
+```php artisan key:generate```
 error related to not having a .env file. Renamed .env.example to .env then run
 ```
-php artisan key:generate\
+php artisan key:generate
 ```
 
 You may need to add the composer.bat / composer.phar files to your PATH. The location is here: C:\ProgramData\ComposerSetup\bin
@@ -194,6 +231,22 @@ create layout.blade.php
 ```php
 @yield('content')
 ```
+
+#### Assets ####
+found in /resources/assets
+
+/sass folder
+
+use a build tool called **webpack** using Laravel's **Mix** configuration tool. It grabs the file in the resources/assets folder and compiles it for use in the /public folder.
+
+They are node dependencies. You need to have Node and npm installed on your machine. 
+
+from your application folder run: ```npm install``` Pulls in packages found in your **package.json** file.
+
+You can run the files based on your package.json scripts section. 
+
+```npm run dev```
+
 
 
 ### Order of Things ###
@@ -388,6 +441,30 @@ $errors is available globally to all views.
 @endif
 ```
 
+## Autentication ##
+
+Using Laravel's Built in authentication using Scaffolding.
+
+```php artisan make:auth```
+
+This will create a number of things:
+1. in /routes/web.php a new route:
+```php
+Auth::routes();
+```
+2. Migration files, which need to be migrated. 
+3. Point to the database you want to use. If SQLite, change your .env file and create a database.sqlite file in the /databases folder.
+
+
+NOTE: in windows you need to add the php/ext directory to your path.
+```C:\Bitnami\wampstack-5.6.30-1\php\ext```
+
+```composer require doctrine/dbal``` is a prerequisite to using SQLite.
+
+You also have to uncomment this line in the php.ini file:
+```extension=php_pdo_sqlite.dll```
+
+
 ## Artisan ##
 
 ## Blade ##
@@ -454,3 +531,7 @@ NOTE: you need to change the default PHP path in the Mac OS.
 
 c:\ProgramData\ComposerSetup\bin\composer.phar
 C:\Bitnami\wampstack-5.6.30-1\php\php.exe
+
+1. Create route
+2. Create controller ```php artisan make:controller ControllerName
+3. add required method to controller class
